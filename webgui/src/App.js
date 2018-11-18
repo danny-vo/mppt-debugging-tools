@@ -6,7 +6,9 @@ import './App.css';
 import {
   Event,
   TimeRange,
-  TimeSeries
+  TimeSeries,
+  TimeEvent,
+  Stream
 } from 'pondjs';
 
 import {
@@ -24,22 +26,44 @@ const hour = 60 * minute;
 const VOLTAGE_IN = "Voltage In";
 const VOLTAGE_OUT = "Voltage Out"
 
+const REST_URL = "http://localhost:5000/";
+const GET_DATA = "get_data/"
+
 class MPPT_Plots extends Component {
   state = {
     time: new Date(),
     events: new Ring(100)
   };
 
-  getNewData = (item) => {
-    const rest_url = "http://localhost:5000/";
-    const get_data = "get_data/"
+  updateState = (data) => {
+    console.log("updateState");
+    const timeArr = data.time;
+    const valsArr = data.vals;
+    const eventsBuffer = this.state.events;
 
-    fetch(rest_url + get_data + item, {
+    console.log(timeArr);
+
+    for (let i=0; i < timeArr.length; ++i) {
+      console.log(new Date(timeArr[i]))
+      const newEvent = new Event(
+        new Date(timeArr[i]),
+        valsArr[i]
+      );
+      console.log(newEvent);
+      eventsBuffer.push(newEvent);
+    }
+
+    console.log(eventsBuffer);
+  };
+
+  getNewData = (item) => {
+    fetch(REST_URL + GET_DATA + item, {
       mode: 'cors',
       method: 'GET'
     }).then(res => res.json()).then(
       (response) => {
         console.log(response);
+        this.updateState(response);
       },
       (error) => {
         console.log(error);
@@ -48,20 +72,12 @@ class MPPT_Plots extends Component {
   };
 
   componentDidMount() {
+    /* Setup Stream for pipelines */
+    this.stream =  new Stream();
+    
+    /* Periodically poll rest end point for data */
     this.interval = setInterval(() => {
       this.getNewData(VOLTAGE_IN);
-      /*
-      const t = new Date(this.state.time.getTime() + increment);
-      const event = this.getNewEvent(t);
-
-      // Raw events
-      const newEvents = this.state.events;
-      newEvents.push(event);
-      this.setState({ time: t, events: newEvents });
-
-      // Let our aggregators process the event
-      this.stream.addEvent(event);
-      */
     }, 3*second);
   }
 
@@ -124,29 +140,6 @@ class MPPT_Plots extends Component {
         </ChartRow>
 
       </ChartContainer>
-    );
-  }
-}
-
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
     );
   }
 }

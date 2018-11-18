@@ -30,6 +30,15 @@ class SerialMonitorInterface(QWidget):
       vc.power_out['label']:   vc.get_var_tracker(vc.POWER_OUT,   vc.power_out['unit']),
       vc.duty_cycle['label']:  vc.get_var_tracker(vc.DUTY_CYCLE,  vc.duty_cycle['unit'])
     })
+    self.data_buffer    = dict({
+      vc.voltage_in['label']:  vc.get_var_tracker(vc.VOLTAGE_IN,  vc.voltage_in['unit']),
+      vc.voltage_out['label']: vc.get_var_tracker(vc.VOLTAGE_OUT, vc.voltage_out['unit']),
+      vc.current_in['label']:  vc.get_var_tracker(vc.CURRENT_IN,  vc.current_in['unit']),
+      vc.current_out['label']: vc.get_var_tracker(vc.CURRENT_OUT, vc.current_out['unit']),
+      vc.power_in['label']:    vc.get_var_tracker(vc.POWER_IN,    vc.power_in['unit']),
+      vc.power_out['label']:   vc.get_var_tracker(vc.POWER_OUT,   vc.power_out['unit']),
+      vc.duty_cycle['label']:  vc.get_var_tracker(vc.DUTY_CYCLE,  vc.duty_cycle['unit'])
+    })
 
   def assignMonitor(self, serialMonitor):
     self.serial_monitor = serialMonitor
@@ -101,16 +110,21 @@ class SerialMonitorInterface(QWidget):
   '''
   def appendDebugOutput(self, response):
     self.monitor_output.moveCursor(QTextCursor.End)
-    timestamp = time.time()
-    timestamp = datetime.datetime.fromtimestamp(timestamp).strftime('%H:%M:%S')
+    current_time = time.time()
+    timestamp = datetime.datetime.fromtimestamp(current_time).strftime('%H:%M:%S')
     self.monitor_output.insertPlainText("[" + timestamp + "]\t" + response.lstrip())
     sb = self.monitor_output.verticalScrollBar()
     sb.setValue(sb.maximum())
 
     try:
+      # Internal data trackers
       outputMap = self.output_mapping[re.sub(r"\s*[^A-Za-z]+\s*", " ", response.lstrip())[:-3]]
       self.var_trackers[outputMap]['time'].append(timestamp)
       self.var_trackers[outputMap]['vals'].append(int(re.sub('[^0-9]','', response)))
+
+      # This is for the consumable buffer
+      self.data_buffer[outputMap]['time'].append(current_time)
+      self.data_buffer[outputMap]['vals'].append(int(re.sub('[^0-9]','', response)))
     except:
       return
 
@@ -205,8 +219,19 @@ class SerialMonitorInterface(QWidget):
     return
   
   def get_data(self, var):
-    print(self.output_mapping)
+    # Get reference
+    times = self.data_buffer[self.output_mapping[var]]['time']
+    vals  = self.data_buffer[self.output_mapping[var]]['vals']
+
+    # Get copied lists
+    times_copy = times.copy()
+    vals_copy  = vals.copy()
+
+    # Clear buffers
+    times.clear()
+    vals.clear()
+
     return dict({
-      'time': self.var_trackers[self.output_mapping[var]]['time'],
-      'vals': self.var_trackers[self.output_mapping[var]]['vals']
+      'time': times_copy,
+      'vals': vals_copy
     })
