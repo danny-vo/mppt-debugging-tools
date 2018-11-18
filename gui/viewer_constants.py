@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 def get_label_cmd(label, cmd, unit):
-	return dict({
+  return dict({
 		'label': label,
 		'cmd':	 cmd,
 		'unit':  unit
 	})
 
 def get_output_mapping():
-	return dict({
+  return dict({
 		VOLTAGE_IN:  voltage_in['label'],
 		VOLTAGE_OUT: voltage_out['label'],
 		CURRENT_IN:  current_in['label'],
@@ -19,7 +19,7 @@ def get_output_mapping():
 	})
 
 def get_command_mapping():
-	return dict({
+  return dict({
 		voltage_in['label']: 	voltage_in['cmd'],
 		voltage_out['label']: voltage_out['cmd'],
 		current_in['label']: 	current_in['cmd'],
@@ -35,7 +35,7 @@ def get_command_mapping():
 	})
 
 def get_var_tracker(title, ylabel):
-	return dict({
+  return dict({
 		'monitorActive': False,
 		'plotActive': False,
 		'time': [],

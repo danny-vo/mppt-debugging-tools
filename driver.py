@@ -1,17 +1,27 @@
+import json
 import sys
 
+from flask import Flask
+from flask_cors import CORS
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QApplication
 
-from flask import Flask
 from gui.serialMonitorViewer import SerialMonitorInterface
 from serialMonitor.serialMonitor import SerialMonitor
 
+import gui.viewer_constants as vc
+
 smv_app = None
 flask_app = Flask(__name__)
+CORS(flask_app)
+
 @flask_app.route('/')
 def index():
-  return smv_app.commands['Get Input Voltage']
+  return json.dumps(smv_app.get_data(vc.VOLTAGE_IN))
+
+@flask_app.route('/get_data/<var>', methods=['GET'])
+def get_data(var):
+  return json.dumps(smv_app.get_data(var))
 
 class FlaskThread(QThread):
   def __init__(self, application):

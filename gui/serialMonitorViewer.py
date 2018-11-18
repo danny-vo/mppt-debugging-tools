@@ -150,7 +150,6 @@ class SerialMonitorInterface(QWidget):
   def onPeriodicPollButtonClicked(self):
     text = self.var_combo.currentText()
     if not self.var_trackers[text]['monitorActive']:
-      text = self.var_combo.currentText()
       Thread(
           target=self.periodicPoll,
           args=[text, 3]
@@ -199,7 +198,15 @@ class SerialMonitorInterface(QWidget):
   Periodically request the power
   '''
   def periodicPoll(self, command, timeInterval):
+    print("poll " + command)
     while (self.var_trackers[command]['monitorActive']):
       time.sleep(timeInterval)
       self.sendAndReceive(command)
     return
+  
+  def get_data(self, var):
+    print(self.output_mapping)
+    return dict({
+      'time': self.var_trackers[self.output_mapping[var]]['time'],
+      'vals': self.var_trackers[self.output_mapping[var]]['vals']
+    })
