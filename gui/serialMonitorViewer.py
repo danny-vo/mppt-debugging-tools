@@ -115,11 +115,18 @@ class SerialMonitorInterface(QWidget):
     self.monitor_output.insertPlainText("[" + timestamp + "]\t" + response.lstrip())
     sb = self.monitor_output.verticalScrollBar()
     sb.setValue(sb.maximum())
+    if "Duty Cycle" in response:
+      colon = response.find(':')
+      self.var_trackers['Get Duty Cycle']['time'].append(timestamp)
+      self.var_trackers['Get Duty Cycle']['vals'].append(int(response[colon+2:colon+4]))
+      self.data_buffer['Get Duty Cycle']['time'].append(current_time)
+      self.data_buffer['Get Duty Cycle']['vals'].append(int(response[colon+2:colon+4]))
 
     try:
       # Internal data trackers
       outputMap = self.output_mapping[re.sub(r"\s*[^A-Za-z]+\s*", " ", response.lstrip())[:-3]]
-      response = response.rstrip("\r\n")
+      print(outputMap)
+
       self.var_trackers[outputMap]['time'].append(timestamp)
       self.var_trackers[outputMap]['vals'].append(float(re.sub('[^0-9\.]','', response)))
 

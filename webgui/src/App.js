@@ -177,6 +177,7 @@ class MPPT_Plots extends Component {
       method: 'GET'
     }).then(res => res.json()).then(
       (response) => {
+        console.log(response);
         this.updateState(response, item);
       },
       (error) => {

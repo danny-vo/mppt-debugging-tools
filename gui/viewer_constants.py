@@ -24,7 +24,7 @@ def get_command_mapping():
 		voltage_out['label']: voltage_out['cmd'],
 		current_in['label']: 	current_in['cmd'],
 		current_out['label']: current_out['cmd'],
-		power_in['label']: 		power_out['cmd'],
+		power_in['label']: 		power_in['cmd'],
 		power_out['label']: 	power_out['cmd'],
 		duty_cycle['label']: 	duty_cycle['cmd'],
 
