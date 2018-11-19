@@ -37,12 +37,12 @@ const GET_DATA = "get_data/";
 const START_TIME = new Date();
 
 const style = styler([
-  { key: VOLTAGE_IN, color: "#CA4040" },
-  { key: VOLTAGE_OUT, color: "#9467bd" },
-  { key: CURRENT_IN, color: "#987951" },
-  { key: CURRENT_OUT, color: "#68798e" },
-  { key: POWER_IN, color: "#3c1518" },
-  { key: POWER_OUT, color: "#d58936" }
+  { key: VOLTAGE_IN, color: "#CA4040", width: 3 },
+  { key: VOLTAGE_OUT, color: "#9467bd", width: 3 },
+  { key: CURRENT_IN, color: "#987951", width: 3 },
+  { key: CURRENT_OUT, color: "#68798e", width: 3 },
+  { key: POWER_IN, color: "#3c1518", width: 3 },
+  { key: POWER_OUT, color: "#d58936", width: 3 }
 ]);
 
 class MPPT_Plots extends Component {
@@ -272,27 +272,27 @@ class MPPT_Plots extends Component {
 
     const axisStyle = {
       label: {
-        fontSize: 20
+        fontWeight: 100,
+        fontSize: 48,
+        font: '"Goudy Bookletter 1911", sans-serif"'
       },
       values: {
-        fontSize: 20
-      }
+        fontWeight: 100,
+        fontSize: 48,
+        font: '"Goudy Bookletter 1911", sans-serif"'
+      },
     };
 
     return (
       <div>
-        <div className="row">
-          <div className="col-md-12" style={{ fontSize: 14, color: "#777" }}>
-              <span > MPPT </span>
-              <span> Plots </span>
-          </div>
-        </div>
         <div className="col-md-2">
           <Legend
             type="line"
             align="right"
             stack={false}
             style={style}
+            symbolwidth={28}
+            symbolheight={28}
             categories={[
               { key: VOLTAGE_IN, label: VOLTAGE_IN },
               { key: VOLTAGE_OUT, label: VOLTAGE_OUT },
@@ -307,6 +307,15 @@ class MPPT_Plots extends Component {
           <div className="col-md-10">
             <Resizable>
               <ChartContainer
+                title="MPPT Plots"
+                titleHeight={80}
+                titleStyle ={{
+                  fontWeight: 100,
+                  fontSize: 40,
+                  font: '"Goudy Bookletter 1911", sans-serif"',
+                  fill: "#cc5500"
+                }}
+                timeAxisStyle={axisStyle}
                 timeRange={tr}
                 showGrid={true}
                 showGridPosition="under"
