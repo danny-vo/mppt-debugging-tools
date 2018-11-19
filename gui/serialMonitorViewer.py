@@ -72,6 +72,13 @@ class SerialMonitorInterface(QWidget):
     periodicPollButton.clicked.connect(self.onPeriodicPollButtonClicked)
     layout.addWidget(periodicPollButton)
 
+
+    '''
+    monitorAllButton = QPushButton("Monitor all items")
+    monitorAllButton.clicked.connect(self.onMonitorAllButtonClicked)
+    layout.addWidget(monitorAllButton)
+    '''
+
     # Initialize plot button
     plotButton = QPushButton("Plot data / Stop plotting")
     plotButton.clicked.connect(self.onPlotButtonClicked)
@@ -171,12 +178,15 @@ class SerialMonitorInterface(QWidget):
   def onPeriodicPollButtonClicked(self):
     text = self.var_combo.currentText()
     if not self.var_trackers[text]['monitorActive']:
+      self.var_trackers[text]['monitorActive'] = True 
       Thread(
           target=self.periodicPoll,
           args=[text, 3]
       ).start()
 
-    self.var_trackers[text]['monitorActive'] = not self.var_trackers[text]['monitorActive'] 
+    else:
+      self.var_trackers[text]['monitorActive'] = False
+
 
   def onCurrAlgBtnClicked(self):
     self.sendAndReceive("Current Algorithm")

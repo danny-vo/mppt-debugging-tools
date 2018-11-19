@@ -270,6 +270,15 @@ class MPPT_Plots extends Component {
       powerOutSeries.max(POWER_OUT) !== undefined ? powerOutSeries.max(POWER_OUT) : 0
     );
 
+    const axisStyle = {
+      label: {
+        fontSize: 20
+      },
+      values: {
+        fontSize: 20
+      }
+    };
+
     return (
       <div>
         <div className="row">
@@ -277,6 +286,22 @@ class MPPT_Plots extends Component {
               <span > MPPT </span>
               <span> Plots </span>
           </div>
+        </div>
+        <div className="col-md-2">
+          <Legend
+            type="line"
+            align="right"
+            stack={false}
+            style={style}
+            categories={[
+              { key: VOLTAGE_IN, label: VOLTAGE_IN },
+              { key: VOLTAGE_OUT, label: VOLTAGE_OUT },
+              { key: CURRENT_IN, label: CURRENT_IN },
+              { key: CURRENT_OUT, label: CURRENT_OUT },
+              { key: POWER_IN, label: POWER_IN },
+              { key: POWER_OUT, label: POWER_OUT }
+            ]}
+          />
         </div>
         <div classname="row">
           <div className="col-md-10">
@@ -288,9 +313,11 @@ class MPPT_Plots extends Component {
               >
 
                 <ChartRow height="200">
-                  <YAxis id="voltage" label="Voltage (V)" labelOffset={5}
+                  <YAxis id="voltage" label="Voltage (V)" labelOffset={-5}
                     min={voltageMin-(.5*voltageMin)} max={voltageMax+(.5*voltageMax)}
-                    type="linear" format=",.3f" width="100"/>
+                    type="linear" format=",.3f" width="100"
+                    style={axisStyle}
+                    />
                   <Charts>
                     <LineChart
                       axis="voltage"
@@ -308,9 +335,11 @@ class MPPT_Plots extends Component {
                 </ChartRow>
 
                 <ChartRow height="200">
-                  <YAxis id="current" label="Current (A)" labelOffset={5}
+                  <YAxis id="current" label="Current (A)" labelOffset={-5}
                     min={currentMin-(.5*currentMin)} max={currentMax+(.5*currentMax)}
-                    type="linear" format=",.3f" width="100"/>
+                    type="linear" format=",.3f" width="100"
+                    style={axisStyle}
+                    />
                   <Charts>
                     <LineChart
                       axis="current"
@@ -328,9 +357,11 @@ class MPPT_Plots extends Component {
                 </ChartRow>
 
                 <ChartRow height="200">
-                  <YAxis id="power" label="Power (W)" labelOffset={5}
+                  <YAxis id="power" label="Power (W)" labelOffset={-5}
                     min={powerMin-(.5*powerMin)} max={powerMax+(.5*powerMax)}
-                    type="linear" format=",.3f" width="100"/>
+                    type="linear" format=",.3f" width="100"
+                    style={axisStyle}
+                    />
                   <Charts>
                     <LineChart
                       axis="power"
@@ -348,8 +379,10 @@ class MPPT_Plots extends Component {
                 </ChartRow>
 
                 <ChartRow height="200">
-                  <YAxis id="duty_cycle" label="Duty Cycle (%)" labelOffset={5}
-                    min={0} max={100} type="linear" width="100"/>
+                  <YAxis id="duty_cycle" label="Duty Cycle (%)" labelOffset={-5}
+                    min={0} max={100} type="linear" width="100"
+                    style={axisStyle}
+                    />
                   <Charts>
                     <LineChart
                       axis="duty_cycle"
@@ -361,22 +394,6 @@ class MPPT_Plots extends Component {
 
               </ChartContainer>
             </Resizable>
-          </div>
-          <div className="col-md-2">
-            <Legend
-              type="line"
-              align="right"
-              stack={true}
-              style={style}
-              categories={[
-                { key: VOLTAGE_IN, label: VOLTAGE_IN },
-                { key: VOLTAGE_OUT, label: VOLTAGE_OUT },
-                { key: CURRENT_IN, label: CURRENT_IN },
-                { key: CURRENT_OUT, label: CURRENT_OUT },
-                { key: POWER_IN, label: POWER_IN },
-                { key: POWER_OUT, label: POWER_OUT }
-              ]}
-            />
           </div>
         </div>
       </div>
