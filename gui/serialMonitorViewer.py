@@ -68,7 +68,7 @@ class SerialMonitorInterface(QWidget):
     layout.addWidget(request_button)
 
     # Initialize periodic poll button
-    periodicPollButton = QPushButton("Monitor Board Value")
+    periodicPollButton = QPushButton("Monitor / Stop monitoring board value")
     periodicPollButton.clicked.connect(self.onPeriodicPollButtonClicked)
     layout.addWidget(periodicPollButton)
 

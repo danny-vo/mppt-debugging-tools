@@ -177,7 +177,6 @@ class MPPT_Plots extends Component {
       method: 'GET'
     }).then(res => res.json()).then(
       (response) => {
-        console.log(response);
         this.updateState(response, item);
       },
       (error) => {
@@ -235,7 +234,7 @@ class MPPT_Plots extends Component {
       <ChartContainer timeRange={tr}>
 
         <ChartRow>
-          <YAxis id="voltage" label="Voltage (V)" min={0} max={100}/>
+          <YAxis id="voltage" label="Voltage (V)" min={0} max={140}/>
           <Charts>
             <LineChart
               axis="voltage"
@@ -251,7 +250,7 @@ class MPPT_Plots extends Component {
         </ChartRow>
 
         <ChartRow>
-          <YAxis id="current" label="Current (A)" min={0} max={10}/>
+          <YAxis id="current" label="Current (A)" min={0} max={6}/>
           <Charts>
             <LineChart
               axis="current"
@@ -267,7 +266,7 @@ class MPPT_Plots extends Component {
         </ChartRow>
 
         <ChartRow>
-          <YAxis id="power" label="Power (W)"/>
+          <YAxis id="power" label="Power (W)" min={0} max={840}/>
           <Charts>
             <LineChart
               axis="power"
@@ -283,7 +282,7 @@ class MPPT_Plots extends Component {
         </ChartRow>
 
         <ChartRow>
-          <YAxis id="duty_cycle" label="Duty Cycle (%)"/>
+          <YAxis id="duty_cycle" label="Duty Cycle (%)" min={0} max={100}/>
           <Charts>
             <LineChart
               axis="duty_cycle"
