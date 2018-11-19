@@ -119,12 +119,13 @@ class SerialMonitorInterface(QWidget):
     try:
       # Internal data trackers
       outputMap = self.output_mapping[re.sub(r"\s*[^A-Za-z]+\s*", " ", response.lstrip())[:-3]]
+      response = response.rstrip("\r\n")
       self.var_trackers[outputMap]['time'].append(timestamp)
-      self.var_trackers[outputMap]['vals'].append(int(re.sub('[^0-9]','', response)))
+      self.var_trackers[outputMap]['vals'].append(float(re.sub('[^0-9\.]','', response)))
 
       # This is for the consumable buffer
       self.data_buffer[outputMap]['time'].append(current_time)
-      self.data_buffer[outputMap]['vals'].append(int(re.sub('[^0-9]','', response)))
+      self.data_buffer[outputMap]['vals'].append(float(re.sub('[^0-9\.]','', response)))
     except:
       return
 
