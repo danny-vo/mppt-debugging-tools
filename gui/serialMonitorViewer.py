@@ -125,7 +125,6 @@ class SerialMonitorInterface(QWidget):
     try:
       # Internal data trackers
       outputMap = self.output_mapping[re.sub(r"\s*[^A-Za-z]+\s*", " ", response.lstrip())[:-3]]
-      print(outputMap)
 
       self.var_trackers[outputMap]['time'].append(timestamp)
       self.var_trackers[outputMap]['vals'].append(float(re.sub('[^0-9\.]','', response)))

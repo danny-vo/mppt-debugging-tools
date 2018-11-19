@@ -12,9 +12,12 @@ import {
   Charts,
   ChartContainer,
   ChartRow,
+  Legend,
   LineChart,
+  styler,
   YAxis
 } from 'react-timeseries-charts';
+import Resizable from 'react-timeseries-charts/lib/components/Resizable';
 
 const second = 1000;
 const minute = 60 * second;
@@ -32,6 +35,15 @@ const REST_URL = "http://localhost:5000/";
 const GET_DATA = "get_data/";
 
 const START_TIME = new Date();
+
+const style = styler([
+  { key: VOLTAGE_IN, color: "#CA4040" },
+  { key: VOLTAGE_OUT, color: "#9467bd" },
+  { key: CURRENT_IN, color: "#987951" },
+  { key: CURRENT_OUT, color: "#68798e" },
+  { key: POWER_IN, color: "#3c1518" },
+  { key: POWER_OUT, color: "#d58936" }
+]);
 
 class MPPT_Plots extends Component {
   state = {
@@ -148,9 +160,11 @@ class MPPT_Plots extends Component {
 
     for (let i=0; i < timeArr.length; ++i) {
       let date = new Date(timeArr[i] * 1000);
+      let valObj = Object()
+      valObj[item] = valsArr[i]
       let newEvent = new TimeEvent(
         date,
-        {value: valsArr[i]}
+        valObj
       );
 
       eventsBuffer.push(newEvent);
@@ -165,8 +179,11 @@ class MPPT_Plots extends Component {
     }
   };
 
-  /** * Function:  getNewData * --------------------- * Retrieves data from the REST api and calls updateState
-       * 
+  /** 
+   * Function:  getNewData
+   * --------------------- 
+   * Retrieves data from the REST api and calls updateState
+   * 
    * item: variable to retrieve data for
    * 
    * returns: none
@@ -177,7 +194,6 @@ class MPPT_Plots extends Component {
       method: 'GET'
     }).then(res => res.json()).then(
       (response) => {
-        console.log(response);
         this.updateState(response, item);
       },
       (error) => {
@@ -198,8 +214,6 @@ class MPPT_Plots extends Component {
       this.getNewData(DUTY_CYCLE);
     }, 3*second);
   }
-
-
   render() {
     const tr = new TimeRange(START_TIME, this.state.time);
     const voltageInSeries = new TimeSeries({
@@ -231,69 +245,141 @@ class MPPT_Plots extends Component {
       events: this.state.dutyCycle.toArray()
     });
 
+    const voltageMin = Math.min(
+      voltageInSeries.min(VOLTAGE_IN) !== undefined ? voltageInSeries.max(VOLTAGE_IN) : 0,
+      voltageOutSeries.min(VOLTAGE_OUT) !== undefined ? voltageOutSeries.max(VOLTAGE_OUT) : 0
+    );
+    const voltageMax = Math.max(
+      voltageInSeries.max(VOLTAGE_IN) !== undefined ? voltageInSeries.max(VOLTAGE_IN) : 0,
+      voltageOutSeries.max(VOLTAGE_OUT) !== undefined ? voltageOutSeries.max(VOLTAGE_OUT) : 0
+    );
+    const currentMin = Math.min(
+      currentInSeries.min(CURRENT_IN) !== undefined ? currentInSeries.max(CURRENT_IN) : 0,
+      currentOutSeries.min(CURRENT_OUT) !== undefined ? currentOutSeries.max(CURRENT_OUT) : 0
+    );
+    const currentMax = Math.max(
+      currentInSeries.max(CURRENT_IN) !== undefined ? currentInSeries.max(CURRENT_IN) : 0,
+      currentOutSeries.max(CURRENT_OUT) !== undefined ? currentOutSeries.max(CURRENT_OUT) : 0
+    );
+    const powerMin = Math.min(
+      powerInSeries.min(POWER_IN) !== undefined ? powerInSeries.max(POWER_IN) : 0,
+      powerOutSeries.min(POWER_OUT) !== undefined ? powerOutSeries.max(POWER_OUT) : 0
+    );
+    const powerMax = Math.max(
+      powerInSeries.max(POWER_IN) !== undefined ? powerInSeries.max(POWER_IN) : 0,
+      powerOutSeries.max(POWER_OUT) !== undefined ? powerOutSeries.max(POWER_OUT) : 0
+    );
+
     return (
-      <ChartContainer timeRange={tr}>
+      <div>
+        <div className="row">
+          <div className="col-md-12" style={{ fontSize: 14, color: "#777" }}>
+              <span > MPPT </span>
+              <span> Plots </span>
+          </div>
+        </div>
+        <div classname="row">
+          <div className="col-md-10">
+            <Resizable>
+              <ChartContainer
+                timeRange={tr}
+                showGrid={true}
+                showGridPosition="under"
+              >
 
-        <ChartRow>
-          <YAxis id="voltage" label="Voltage (V)" min={0} max={140}/>
-          <Charts>
-            <LineChart
-              axis="voltage"
-              series={voltageInSeries}
-              columns={["time", "value"]}
-            />
-            <LineChart
-              axis="voltage"
-              series={voltageOutSeries}
-              columns={["time", "value"]}
-            />
-          </Charts>
-        </ChartRow>
+                <ChartRow height="200">
+                  <YAxis id="voltage" label="Voltage (V)" labelOffset={5}
+                    min={voltageMin-(.5*voltageMin)} max={voltageMax+(.5*voltageMax)}
+                    type="linear" format=",.3f" width="100"/>
+                  <Charts>
+                    <LineChart
+                      axis="voltage"
+                      series={voltageInSeries}
+                      columns={["time", VOLTAGE_IN]}
+                      style={style}
+                    />
+                    <LineChart
+                      axis="voltage"
+                      series={voltageOutSeries}
+                      columns={["time", VOLTAGE_OUT]}
+                      style={style}
+                    />
+                  </Charts>
+                </ChartRow>
 
-        <ChartRow>
-          <YAxis id="current" label="Current (A)" min={0} max={6}/>
-          <Charts>
-            <LineChart
-              axis="current"
-              series={currentInSeries}
-              columns={["time", "value"]}
-            />
-            <LineChart
-              axis="current"
-              series={currentOutSeries}
-              columns={["time", "value"]}
-            />
-          </Charts>
-        </ChartRow>
+                <ChartRow height="200">
+                  <YAxis id="current" label="Current (A)" labelOffset={5}
+                    min={currentMin-(.5*currentMin)} max={currentMax+(.5*currentMax)}
+                    type="linear" format=",.3f" width="100"/>
+                  <Charts>
+                    <LineChart
+                      axis="current"
+                      series={currentInSeries}
+                      columns={["time", CURRENT_IN]}
+                      style={style}
+                    />
+                    <LineChart
+                      axis="current"
+                      series={currentOutSeries}
+                      columns={["time", CURRENT_OUT]}
+                      style={style}
+                    />
+                  </Charts>
+                </ChartRow>
 
-        <ChartRow>
-          <YAxis id="power" label="Power (W)" min={0} max={840}/>
-          <Charts>
-            <LineChart
-              axis="power"
-              series={powerInSeries}
-              columns={["time", "value"]}
-            />
-            <LineChart
-              axis="power"
-              series={powerOutSeries}
-              columns={["time", "value"]}
-            />
-          </Charts>
-        </ChartRow>
+                <ChartRow height="200">
+                  <YAxis id="power" label="Power (W)" labelOffset={5}
+                    min={powerMin-(.5*powerMin)} max={powerMax+(.5*powerMax)}
+                    type="linear" format=",.3f" width="100"/>
+                  <Charts>
+                    <LineChart
+                      axis="power"
+                      series={powerInSeries}
+                      columns={["time", POWER_IN]}
+                      style={style}
+                    />
+                    <LineChart
+                      axis="power"
+                      series={powerOutSeries}
+                      columns={["time", POWER_OUT]}
+                      style={style}
+                    />
+                  </Charts>
+                </ChartRow>
 
-        <ChartRow>
-          <YAxis id="duty_cycle" label="Duty Cycle (%)" min={0} max={100}/>
-          <Charts>
-            <LineChart
-              axis="duty_cycle"
-              series={dutyCycleSeries}
-              columns={["time", "value"]}
-            />
-          </Charts>
-        </ChartRow>
+                <ChartRow height="200">
+                  <YAxis id="duty_cycle" label="Duty Cycle (%)" labelOffset={5}
+                    min={0} max={100} type="linear" width="100"/>
+                  <Charts>
+                    <LineChart
+                      axis="duty_cycle"
+                      series={dutyCycleSeries}
+                      columns={["time", DUTY_CYCLE]}
+                    />
+                  </Charts>
+                </ChartRow>
 
-      </ChartContainer>
+              </ChartContainer>
+            </Resizable>
+          </div>
+          <div className="col-md-2">
+            <Legend
+              type="line"
+              align="right"
+              stack={true}
+              style={style}
+              categories={[
+                { key: VOLTAGE_IN, label: VOLTAGE_IN },
+                { key: VOLTAGE_OUT, label: VOLTAGE_OUT },
+                { key: CURRENT_IN, label: CURRENT_IN },
+                { key: CURRENT_OUT, label: CURRENT_OUT },
+                { key: POWER_IN, label: POWER_IN },
+                { key: POWER_OUT, label: POWER_OUT }
+              ]}
+            />
+          </div>
+        </div>
+      </div>
     );
   }
 }
