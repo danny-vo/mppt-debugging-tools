@@ -14,6 +14,7 @@ import {
   ChartRow,
   Legend,
   LineChart,
+  ScatterChart,
   styler,
   YAxis
 } from 'react-timeseries-charts';
@@ -42,8 +43,22 @@ const style = styler([
   { key: CURRENT_IN, color: "#987951", width: 3 },
   { key: CURRENT_OUT, color: "#68798e", width: 3 },
   { key: POWER_IN, color: "#3c1518", width: 3 },
-  { key: POWER_OUT, color: "#d58936", width: 3 }
+  { key: POWER_OUT, color: "#d58936", width: 3 },
+  { key: DUTY_CYCLE, color: "#FF69B4", width: 3}
 ]);
+
+const axisStyle = {
+  label: {
+    fontWeight: 100,
+    fontSize: 48,
+    font: '"Goudy Bookletter 1911", sans-serif"'
+  },
+  values: {
+    fontWeight: 100,
+    fontSize: 48,
+    font: '"Goudy Bookletter 1911", sans-serif"'
+  },
+};
 
 class MPPT_Plots extends Component {
   state = {
@@ -270,18 +285,8 @@ class MPPT_Plots extends Component {
       powerOutSeries.max(POWER_OUT) !== undefined ? powerOutSeries.max(POWER_OUT) : 0
     );
 
-    const axisStyle = {
-      label: {
-        fontWeight: 100,
-        fontSize: 48,
-        font: '"Goudy Bookletter 1911", sans-serif"'
-      },
-      values: {
-        fontWeight: 100,
-        fontSize: 48,
-        font: '"Goudy Bookletter 1911", sans-serif"'
-      },
-    };
+    const dutyCycleMin = dutyCycleSeries.min(DUTY_CYCLE);
+    const dutyCycleMax = dutyCycleSeries.max(DUTY_CYCLE);
 
     return (
       <div>
@@ -321,10 +326,10 @@ class MPPT_Plots extends Component {
                 showGridPosition="under"
               >
 
-                <ChartRow height="200">
+                <ChartRow height="210">
                   <YAxis id="voltage" label="Voltage (V)" labelOffset={-5}
                     min={voltageMin-(.5*voltageMin)} max={voltageMax+(.5*voltageMax)}
-                    type="linear" format=",.3f" width="100"
+                    type="linear" format=",.2f" width="100"
                     style={axisStyle}
                     />
                   <Charts>
@@ -334,19 +339,31 @@ class MPPT_Plots extends Component {
                       columns={["time", VOLTAGE_IN]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="voltage"
+                      series={voltageInSeries}
+                      columns={["time", VOLTAGE_IN]}
+                      radius={4}
+                    />
                     <LineChart
                       axis="voltage"
                       series={voltageOutSeries}
                       columns={["time", VOLTAGE_OUT]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="voltage"
+                      series={voltageOutSeries}
+                      columns={["time", VOLTAGE_OUT]}
+                      radius={4}
+                    />
                   </Charts>
                 </ChartRow>
 
-                <ChartRow height="200">
+                <ChartRow height="210">
                   <YAxis id="current" label="Current (A)" labelOffset={-5}
                     min={currentMin-(.5*currentMin)} max={currentMax+(.5*currentMax)}
-                    type="linear" format=",.3f" width="100"
+                    type="linear" format=",.2f" width="100"
                     style={axisStyle}
                     />
                   <Charts>
@@ -356,19 +373,31 @@ class MPPT_Plots extends Component {
                       columns={["time", CURRENT_IN]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="current"
+                      series={currentInSeries}
+                      columns={["time", CURRENT_IN]}
+                      radius={4}
+                    />
                     <LineChart
                       axis="current"
                       series={currentOutSeries}
                       columns={["time", CURRENT_OUT]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="current"
+                      series={currentOutSeries}
+                      columns={["time", CURRENT_OUT]}
+                      radius={4}
+                    />
                   </Charts>
                 </ChartRow>
 
-                <ChartRow height="200">
+                <ChartRow height="210">
                   <YAxis id="power" label="Power (W)" labelOffset={-5}
                     min={powerMin-(.5*powerMin)} max={powerMax+(.5*powerMax)}
-                    type="linear" format=",.3f" width="100"
+                    type="linear" format=",.2f" width="100"
                     style={axisStyle}
                     />
                   <Charts>
@@ -378,18 +407,30 @@ class MPPT_Plots extends Component {
                       columns={["time", POWER_IN]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="power"
+                      series={powerInSeries}
+                      columns={["time", POWER_IN]}
+                      radius={4}
+                    />
                     <LineChart
                       axis="power"
                       series={powerOutSeries}
                       columns={["time", POWER_OUT]}
                       style={style}
                     />
+                    <ScatterChart
+                      axis="power"
+                      series={powerOutSeries}
+                      columns={["time", POWER_OUT]}
+                      radius={4}
+                    />
                   </Charts>
                 </ChartRow>
-
-                <ChartRow height="200">
-                  <YAxis id="duty_cycle" label="Duty Cycle (%)" labelOffset={-5}
-                    min={0} max={100} type="linear" width="100"
+                <ChartRow height="210">
+                  <YAxis id="duty_cycle" label="Duty Cycle (us)" labelOffset={-5}
+                    min={dutyCycleMin-(.3*dutyCycleMin)} max={dutyCycleMax+(.3*dutyCycleMax)} type="linear" width="100"
+                    format=",.2f"
                     style={axisStyle}
                     />
                   <Charts>
@@ -397,6 +438,13 @@ class MPPT_Plots extends Component {
                       axis="duty_cycle"
                       series={dutyCycleSeries}
                       columns={["time", DUTY_CYCLE]}
+                      style={style}
+                    />
+                    <ScatterChart
+                      axis="duty_cycle"
+                      series={dutyCycleSeries}
+                      columns={["time", DUTY_CYCLE]}
+                      radius={4}
                     />
                   </Charts>
                 </ChartRow>

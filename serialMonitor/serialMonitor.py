@@ -2,6 +2,7 @@
 
 import re
 import sys
+import time
 from threading import Lock
 
 import serial
@@ -32,6 +33,7 @@ class SerialMonitor():
 
   def getLineFromComPort(self):
     self.inboundLock.acquire()
+    time.sleep(.300)
     line = ''
     lastCharReceived = ''
     while '\n' not in lastCharReceived:
@@ -60,6 +62,7 @@ class SerialMonitor():
 
   def sendStringToComPort(self, message):
     self.outboundLock.acquire()
+    time.sleep(.300)
     self.sendBytesToComPort(message.encode('utf-8'))
     self.outboundLock.release()
 

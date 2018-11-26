@@ -124,12 +124,14 @@ class SerialMonitorInterface(QWidget):
     sb.setValue(sb.maximum())
     if "Duty Cycle" in response:
       colon = response.find(':')
+      dot   = response.find('.')
       self.var_trackers['Get Duty Cycle']['time'].append(timestamp)
-      self.var_trackers['Get Duty Cycle']['vals'].append(int(response[colon+2:colon+4]))
+      self.var_trackers['Get Duty Cycle']['vals'].append(float(response[colon+2:dot+4]))
       self.data_buffer['Get Duty Cycle']['time'].append(current_time)
-      self.data_buffer['Get Duty Cycle']['vals'].append(int(response[colon+2:colon+4]))
+      self.data_buffer['Get Duty Cycle']['vals'].append(float(response[colon+2:dot+4]))
 
     try:
+      print(response)
       # Internal data trackers
       outputMap = self.output_mapping[re.sub(r"\s*[^A-Za-z]+\s*", " ", response.lstrip())[:-3]]
 
@@ -181,7 +183,7 @@ class SerialMonitorInterface(QWidget):
       self.var_trackers[text]['monitorActive'] = True 
       Thread(
           target=self.periodicPoll,
-          args=[text, 3]
+          args=[text, 10]
       ).start()
 
     else:
